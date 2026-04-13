@@ -5,7 +5,7 @@
 #include "board_config.h"
 #include <ArduinoJson.h>
 
-const char* ssid = "RobotCam";
+const char* ssid = "SSRM-BOT";
 const char* password = "12345678";
 
 
@@ -49,135 +49,11 @@ typedef struct {
 
 DataPacket data;
 
-
-
-
-
-// ================= ESP-NOW SEND =================
-void sendCommand(uint8_t dir, uint8_t speed) {
-  DataPacket pkt;
-  pkt.type = 1;
-  pkt.dir = dir;
-  pkt.speed = speed;
- 
-
-  esp_now_send(esp8266Mac, (uint8_t*)&pkt, sizeof(pkt));
-}
-void sendCommandsg(uint8_t ss) {
-  DataPacket pkt;
-  pkt.type = 3;
-
-  pkt.sg = ss;
-
-
-  esp_now_send(esp8266Mac, (uint8_t*)&pkt, sizeof(pkt));
-}
-
-// ================= ESP-NOW RECEIVE =================
-void onDataRecv(const esp_now_recv_info* info, const uint8_t* incomingData, int len) {
-
-  memcpy(&data, incomingData, sizeof(data));
-
-
-
-
-  if (data.type == 2) {
-
-    if (data.dist > 0 && data.dist < max_dist) {
-      warning = true;
-
-    } else {
-
-      warning = false;
-    }
-
-    String json = "{";
-    json += "\"temp\":" + String(data.temp) + ",";
-    json += "\"hum\":" + String(data.hum) + ",";
-    json += "\"dist\":" + String(data.dist);
-    json += "}";
-
-    // Serial.println("------------");
-
-    webSocket.broadcastTXT(json);
-  }
-}
-
-// ================= WEBSOCKET =================
-void webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length) {
-
-  switch (type) {
-    case WStype_DISCONNECTED:
-      Serial.printf("[%u] Disconnected!\n", num);
-      break;
-    case WStype_CONNECTED:
-      {
-        IPAddress ip = webSocket.remoteIP(num);
-        Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
-
-        // send message to client
-        webSocket.sendTXT(num, "Connected");
-      }
-      break;
-    case WStype_TEXT:
-      {
-
-        String msg = (char*)payload;
-        Serial.println(msg);
-
-
-        JsonDocument doc;
-
-        DeserializationError error = deserializeJson(doc, msg);
-
-        if (error) {
-          Serial.print("deserializeJson() failed: ");
-          Serial.println(error.c_str());
-          return;
-        }
-
-
-        if (doc["dir"].is<int>()) {
-          int dir = doc["dir"];
-          if (dir == 0) {
-            stopMotors();
-          }
-
-
-          direction = dir;
-          sendCommand(direction, initSpeed);
-        }
-
-        if (doc["flash"].is<bool>()) {
-          bool flash = doc["flash"];
-          if (flash) {
-            digitalWrite(4, 1);
-          } else {
-            digitalWrite(4, 0);
-          }
-        }
-        if (doc["speed"].is<int>()) {
-          int speed = doc["speed"];
-          initSpeed = speed;
-         sendCommand(direction, initSpeed);
-        }
-        if (doc["servo"].is<int>()) {
-          int servo = doc["servo"];
-          S_angle = servo;
-         sendCommandsg(S_angle);
-        }
-
-
-        break;
-      }
-  }
-}
-
-// ================= CAMERA =================
+// ================= CAMERA =============
 void startCameraServer();
-void setupLedFlash();
 
-// ================= SETUP =================
+
+
 void setup() {
   Serial.begin(115200);
 
@@ -186,19 +62,14 @@ void setup() {
   pinMode(IN2, OUTPUT);
   pinMode(IN3, OUTPUT);
   pinMode(IN4, OUTPUT);
+  pinMode(4, OUTPUT);
 
-  // ===== Motors (1kHz) =====
+ 
   ledcAttachChannel(IN1, 1000, 8, CH_IN1);
   ledcAttachChannel(IN2, 1000, 8, CH_IN2);
   ledcAttachChannel(IN3, 1000, 8, CH_IN3);
   ledcAttachChannel(IN4, 1000, 8, CH_IN4);
 
-  // ===== Servo (50Hz) =====
-
-
-
-
-  pinMode(4, OUTPUT);
 
   // WiFi
   WiFi.mode(WIFI_AP_STA);
@@ -270,28 +141,10 @@ void setup() {
   Serial.println("READY");
 }
 
-// ================= LOOP =================
+
 void loop() {
   webSocket.loop();
   MoveRobot(initSpeed, direction);
 }
 
 
-void json_rec(String input) {
-
-
-  JsonDocument doc;
-
-  DeserializationError error = deserializeJson(doc, input);
-
-  if (error) {
-    Serial.print("deserializeJson() failed: ");
-    Serial.println(error.c_str());
-    return;
-  }
-
-  const char* dir = doc["dir"];  // "stop"
-  bool flash = doc["flash"];     // true
-  int speed = doc["speed"];      // 160
-  int servo = doc["servo"];      // 100
-}

@@ -190,7 +190,7 @@ static esp_err_t capture_handler(httpd_req_t *req) {
 #endif
     res = httpd_resp_send(req, (const char *)fb->buf, fb->len);
   } else {
-    jpg_chunking_t jchunk = {req, 0};
+    jpg_chunking_t jchunk = { req, 0 };
     res = frame2jpg_cb(fb, 80, jpg_encode_stream, &jchunk) ? ESP_OK : ESP_FAIL;
     httpd_resp_send_chunk(req, NULL, 0);
 #if ARDUHAL_LOG_LEVEL >= ARDUHAL_LOG_LEVEL_INFO
@@ -285,8 +285,7 @@ static esp_err_t stream_handler(httpd_req_t *req) {
 #endif
     log_i(
       "MJPG: %uB %ums (%.1ffps), AVG: %ums (%.1ffps)", (uint32_t)(_jpg_buf_len), (uint32_t)frame_time, 1000.0 / (uint32_t)frame_time, avg_frame_time,
-      1000.0 / avg_frame_time
-    );
+      1000.0 / avg_frame_time);
   }
 
 #if defined(LED_GPIO_NUM)

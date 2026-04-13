@@ -1,6 +1,6 @@
 
 // ---------------- motor movement -----------------
-// movement {"stop","forward","back","right","left","fright","fleft","bright","bleft"}
+// movement {"stop","forward","back","right","left","fright","fleft","bright","bleft","rotateR", "rotateL"}
 void MoveRobot(uint8_t speed, uint8_t dir) {
   switch (dir) {
     case 0:
@@ -42,6 +42,12 @@ void MoveRobot(uint8_t speed, uint8_t dir) {
       break;
     case 8:
       BLeft(speed);
+      break;
+    case 9:
+      forward(speed);
+      break;
+    case 10:
+      back(speed);
       break;
   }
 }
@@ -116,4 +122,21 @@ void BLeft(int speed) {
   analogWrite(IN4, speed);  // F-W
   analogWrite(IN1, 0);      // B-W
   analogWrite(IN2, 0);      // B-W
+}
+
+void moveServo(int angle) {
+  static int lastAngle = 90; 
+  angle = 180 - angle;
+  servo.attach(1, 500, 2500);
+
+  servo.write(angle);
+
+  int delta = abs(angle - lastAngle);
+
+  int moveTime = map(delta, 0, 180, 50, 400);
+  delay(moveTime);
+
+ servo.detach();
+
+  lastAngle = angle;
 }
