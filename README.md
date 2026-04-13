@@ -160,7 +160,8 @@ The system is built using a **distributed architecture**:
 
 ## 👨‍💻 Author
 
-**Islam**  
+*Tecno Smart*  
+**eng.Eslam Ebrahim**
 Embedded Systems & Flutter Developer  
 Specialized in IoT, Robotics, and Real-time Systems
 
