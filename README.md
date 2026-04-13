@@ -10,7 +10,7 @@ The robot is fully designed using **Fusion 360 (Sheet Metal)** and physically bu
 
 ## 🖼️ Hardware Prototype
 
-![Robot Prototype](images/real.png)
+![Robot Prototype](image/real.png)
 
 ---
 
@@ -36,7 +36,7 @@ The system is built using a **distributed architecture**:
 
 ## ⚙️ Mechanical Design
 
-![CAD Design](images/8.png)
+![CAD Design](image/8.png)
 
 - Designed using **Fusion 360 Sheet Metal**
 - Material: **Acrylic (CNC cut)**
@@ -48,7 +48,7 @@ The system is built using a **distributed architecture**:
 
 ## 🔩 Internal Layout
 
-![Internal Layout](images/9.png)
+![Internal Layout](image/9.png)
 
 - 4 × TT Motors
 - Dual ESP architecture
@@ -83,7 +83,7 @@ The system is built using a **distributed architecture**:
 
 ## 🧩 Custom PCB
 
-![PCB Design](images/pcb.jpeg)
+![PCB Design](image/pcb.jpeg)
 
 - Designed using **EasyEDA**
 - Goals:
@@ -101,7 +101,7 @@ The system is built using a **distributed architecture**:
 
 ## 🎮 Mobile Application Features
 
-![App UI](images/app.jpeg)
+![App UI](image/app.jpeg)
 
 ### 🚗 Movement Control
 - Full omnidirectional control using mecanum wheels:
